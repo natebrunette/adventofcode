@@ -3,16 +3,16 @@ import Foundation
 class RE: Error {}
 
 class Reader {
-  let decoder = JSONDecoder()
-  var lines: IndexingIterator<[String]> = [].makeIterator()
-  let root =
+  private let decoder = JSONDecoder()
+  private var lines: IndexingIterator<[String]> = [].makeIterator()
+  private let root =
     FileManager.default.homeDirectoryForCurrentUser.path + "/Development/adventofcode/adventofcode"
 
-  func readFile(year: Int, day: Int, part: Int = 1) {
+  func readFile(year: Int, day: Int) {
     let content: String
 
     do {
-      content = try String(contentsOfFile: "\(root)/\(year)/resources/day\(day)_part\(part)")
+      content = try String(contentsOfFile: "\(root)/\(year)/resources/day\(day)")
     } catch {
       fatalError("Could not open file")
     }

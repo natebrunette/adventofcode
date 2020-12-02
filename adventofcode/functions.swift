@@ -25,9 +25,9 @@ func threeSum(nums: [Int], target: Int) -> Int {
     while left < right {
       let sum = sortedNums[i] + sortedNums[left] + sortedNums[right]
       if sum < target {
-        left = left + 1
+        left++
       } else if sum > target {
-        right = right - 1
+        right--
       } else {
         return sortedNums[i] * sortedNums[left] * sortedNums[right]
       }
@@ -35,4 +35,22 @@ func threeSum(nums: [Int], target: Int) -> Int {
   }
 
   return 0
+}
+
+func validPassword2020(min: Int, max: Int, character: Character, password: String) -> Bool {
+  var count = 0
+  for char in password {
+    if char == character {
+      count++
+    }
+  }
+
+  return count >= min && count <= max
+}
+
+func validPassword2020(pos1: Int, pos2: Int, character: Character, password: String) -> Bool {
+  let first = password[String.Index(utf16Offset: pos1 - 1, in: password)]
+  let second = password[String.Index(utf16Offset: pos2 - 1, in: password)]
+
+  return (first == character) ^ (second == character)
 }

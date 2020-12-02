@@ -20,9 +20,13 @@ class Reader {
     lines = content.components(separatedBy: "\n").filter({ !$0.isEmpty }).makeIterator()
   }
 
-  func nextLine<T: Codable>() -> T {
+  func nextLine() -> String? {
+    return lines.next()
+  }
+
+  func next<T: Codable>() -> T? {
     guard let line = lines.next() else {
-      fatalError("Could not read next line")
+      return nil
     }
 
     do {

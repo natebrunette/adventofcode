@@ -1,3 +1,3 @@
 import Foundation
 
-_2020_day1_part2()
+_2020_day2_part2()

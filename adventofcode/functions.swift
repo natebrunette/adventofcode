@@ -36,11 +36,8 @@ func threeSum(nums: [Int], target: Int) -> Int {
 }
 
 func validPassword2020(min: Int, max: Int, character: Character, password: String) -> Bool {
-  var count = 0
-  for char in password {
-    if char == character {
-      count++
-    }
+  let count = Array(password).reduce(0) { carry, char in
+    char == character ? carry + 1 : carry
   }
 
   return count >= min && count <= max

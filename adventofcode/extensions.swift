@@ -1,5 +1,3 @@
-import Foundation
-
 extension Int {
   @discardableResult
   static prefix func ++ (x: inout Int) -> Int {

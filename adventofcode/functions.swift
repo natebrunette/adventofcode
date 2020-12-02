@@ -1,5 +1,3 @@
-import Foundation
-
 func twoSum(nums: [Int], target: Int) -> Int {
   var map = [Int: Int]()
   for (i, num) in nums.enumerated() {

@@ -1,5 +1,3 @@
-import Foundation
-
 let reader = Reader()
 
 func _2020_day2_part2() {

@@ -45,10 +45,3 @@ func validPassword2020(min: Int, max: Int, character: Character, password: Strin
 
   return count >= min && count <= max
 }
-
-func validPassword2020(pos1: Int, pos2: Int, character: Character, password: String) -> Bool {
-  let first = password[String.Index(utf16Offset: pos1 - 1, in: password)]
-  let second = password[String.Index(utf16Offset: pos2 - 1, in: password)]
-
-  return (first == character) ^ (second == character)
-}

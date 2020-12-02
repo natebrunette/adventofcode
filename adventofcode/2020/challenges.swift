@@ -7,13 +7,13 @@ func _2020_day2_part2() {
   while let line: String = reader.nextLine() {
     let parts = line.components(separatedBy: " ")
     let range = parts[0].components(separatedBy: "-")
-    let pos1 = Int(range[0])!
-    let pos2 = Int(range[1])!
-    let character = Character(String(parts[1].prefix(1)))
+    let pos1 = Int(range[0])! - 1
+    let pos2 = Int(range[1])! - 1
+    let character = parts[1][0]
     let password = parts[2]
+    let isValid = (password[pos1] == character) ^ (password[pos2] == character)
 
-    count +=
-      validPassword2020(pos1: pos1, pos2: pos2, character: character, password: password) ? 1 : 0
+    count += isValid ? 1 : 0
   }
 
   print(count)
@@ -28,7 +28,7 @@ func _2020_day2_part1() {
     let range = parts[0].components(separatedBy: "-")
     let min = Int(range[0])!
     let max = Int(range[1])!
-    let character = Character(String(parts[1].prefix(1)))
+    let character = parts[1][0]
     let password = parts[2]
 
     count +=

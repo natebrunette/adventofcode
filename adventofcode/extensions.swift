@@ -24,6 +24,12 @@ extension Int {
   }
 }
 
+extension StringProtocol {
+  subscript(offset: Int) -> Character {
+    self[index(startIndex, offsetBy: offset)]
+  }
+}
+
 extension Bool {
   static func ^ (lhs: Bool, rhs: Bool) -> Bool {
     return lhs != rhs

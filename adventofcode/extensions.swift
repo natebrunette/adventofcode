@@ -35,9 +35,3 @@ extension Bool {
     return lhs != rhs
   }
 }
-
-extension Dictionary {
-  func getOrDefault(key: Key, defaultValue: Value) -> Value {
-    return self[key] == nil ? defaultValue : self[key]!
-  }
-}

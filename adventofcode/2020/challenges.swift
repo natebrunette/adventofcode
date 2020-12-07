@@ -1,30 +1,121 @@
 let reader = Reader()
 
-func _2020_day3_part2() {
+func _2020_day7_part2() -> Int {
+  reader.readFile(year: 2020, day: 7)
+
+  return countTotalContainingBags(color: "shiny gold", map: buildBagMap(reader: reader))
+}
+
+func _2020_day7_part1() -> Int {
+  reader.readFile(year: 2020, day: 7)
+
+  var found = Set<String>()
+  findHoldingBagsFor(color: "shiny gold", map: buildBagMap(reader: reader), found: &found)
+
+  return found.count
+}
+
+func _2020_day6_part2() -> Int {
+  reader.readFile(year: 2020, day: 6)
+
+  var count = 0
+  while let lines = reader.nextBlock() {
+    var map = [Character: Int]()
+    lines.forEach { $0.forEach { map[$0, default: 0] += 1 } }
+    count += map.keys.reduce(0) { map[$1] == lines.count ? $0 + 1 : $0 }
+  }
+
+  return count
+}
+
+func _2020_day6_part1() -> Int {
+  reader.readFile(year: 2020, day: 6)
+
+  var count = 0
+  while let lines = reader.nextBlock() {
+    var set = Set<Character>()
+    lines.forEach { $0.forEach { set.insert($0) } }
+    count += set.count
+  }
+
+  return count
+}
+
+func _2020_day5_part2() -> Int {
+  reader.readFile(year: 2020, day: 5)
+
+  let bounds = getSeatIdBounds(reader)
+  var set = Set<Int>(bounds.low...bounds.high)
+
+  reader.replay()
+
+  while let line: String = reader.next() {
+    let characters = Array(line)
+    let row = searchInPartition(num: 128, partitions: Array(characters[..<7]))
+    let col = searchInPartition(num: 8, partitions: Array(characters[7...]))
+    set.remove(row * 8 + col)
+  }
+
+  return set.first!
+}
+
+func _2020_day5_part1() -> Int {
+  reader.readFile(year: 2020, day: 5)
+
+  return getSeatIdBounds(reader).high
+}
+
+func _2020_day4_part2() -> Int {
+  reader.readFile(year: 2020, day: 4)
+
+  var count = 0
+  while let lines = reader.nextBlock() {
+    let passport = buildPassport(lines: lines)
+    count += passport.isValid() ? 1 : 0
+  }
+
+  return count
+}
+
+func _2020_day4_part1() -> Int {
+  reader.readFile(year: 2020, day: 4)
+
+  var count = 0
+  while let lines = reader.nextBlock() {
+    var requiredFields: Set = ["ecl", "pid", "eyr", "hcl", "byr", "iyr", "hgt"]
+    lines.forEach {
+      $0.components(separatedBy: " ").forEach {
+        requiredFields.remove($0.components(separatedBy: ":").first!)
+      }
+    }
+
+    count += requiredFields.count > 0 ? 0 : 1
+  }
+
+  return count
+}
+
+func _2020_day3_part2() -> Int {
   reader.readFile(year: 2020, day: 3)
 
   let coords = [[1, 1], [3, 1], [5, 1], [7, 1], [1, 2]]
   let grid = buildTobogganGrid(reader: reader)
-  var result = 1
+  let result = coords.reduce(1) { $0 * countTrees(grid: grid, right: $1[0], down: $1[1]) }
 
-  for coord in coords {
-    result *= countTrees(grid: grid, right: coord[0], down: coord[1])
-  }
-
-  print(result)
+  return result
 }
 
-func _2020_day3_part1() {
+func _2020_day3_part1() -> Int {
   reader.readFile(year: 2020, day: 3)
 
-  print(countTrees(grid: buildTobogganGrid(reader: reader), right: 3, down: 1))
+  return countTrees(grid: buildTobogganGrid(reader: reader), right: 3, down: 1)
 }
 
-func _2020_day2_part2() {
+func _2020_day2_part2() -> Int {
   reader.readFile(year: 2020, day: 2)
 
   var count = 0
-  while let line: String = reader.nextLine() {
+  while let line = reader.next() {
     let parts = line.components(separatedBy: " ")
     let range = parts[0].components(separatedBy: "-")
     let pos1 = Int(range[0])! - 1
@@ -36,46 +127,47 @@ func _2020_day2_part2() {
     count += isValid ? 1 : 0
   }
 
-  print(count)
+  return count
 }
 
-func _2020_day2_part1() {
+func _2020_day2_part1() -> Int {
   reader.readFile(year: 2020, day: 2)
 
   var count = 0
-  while let line: String = reader.nextLine() {
+  while let line = reader.next() {
     let parts = line.components(separatedBy: " ")
     let range = parts[0].components(separatedBy: "-")
-    let min = Int(range[0])!
-    let max = Int(range[1])!
-    let character = parts[1][0]
-    let password = parts[2]
 
     count +=
-      validPassword(min: min, max: max, character: character, password: password) ? 1 : 0
+      validPassword(
+        min: Int(range[0])!,
+        max: Int(range[1])!,
+        character: parts[1][0],
+        password: parts[2]
+      ) ? 1 : 0
   }
 
-  print(count)
+  return count
 }
 
-func _2020_day1_part2() {
+func _2020_day1_part2() -> Int {
   reader.readFile(year: 2020, day: 1)
-  let nums: [Int] = reader.next()!
-  let target: Int = reader.next()!
-  print(threeSum(nums: nums, target: target))
+
+  let nums = reader.nextBlock()!.map { Int($0)! }
+
+  return threeSum(nums: nums, target: 2020).reduce(1) { $0 * $1 }
 }
 
-func _2020_day1_part1() {
+func _2020_day1_part1() -> Int {
   reader.readFile(year: 2020, day: 1)
-  let nums: [Int] = reader.next()!
-  let target: Int = reader.next()!
-  print(twoSum(nums: nums, target: target))
+
+  let nums = reader.nextBlock()!.map { Int($0)! }
+
+  return twoSum(nums: nums, target: 2020).reduce(1) { $0 * nums[$1] }
 }
 
 private func validPassword(min: Int, max: Int, character: Character, password: String) -> Bool {
-  let count = Array(password).reduce(0) { carry, char in
-    char == character ? carry + 1 : carry
-  }
+  let count = password.reduce(0) { $1 == character ? $0 + 1 : $0 }
 
   return count >= min && count <= max
 }
@@ -83,16 +175,10 @@ private func validPassword(min: Int, max: Int, character: Character, password: S
 private func buildTobogganGrid(reader: Reader) -> [[String.Element]] {
   var grid = [[Character]]()
   var x = 0
-  var y = 0
 
-  while let line: String = reader.nextLine() {
-    y = 0
+  while let line = reader.next() {
     grid.append([Character](repeating: Character("."), count: line.count))
-
-    for char in line {
-      grid[x][y++] = char
-    }
-
+    line.enumerated().forEach { grid[x][$0] = $1 }
     x++
   }
 
@@ -120,4 +206,117 @@ private func countTrees(grid: [[String.Element]], right: Int, down: Int) -> Int 
   }
 
   return count
+}
+
+private func buildPassport(lines: [String]) -> Passport {
+  var passport = Passport()
+  lines.forEach {
+    $0.components(separatedBy: " ").forEach {
+      let parts = $0.components(separatedBy: ":")
+      let value = parts[1]
+      switch parts[0] {
+      case "byr":
+        passport.birthYear = Int(value)
+      case "iyr":
+        passport.issueYear = Int(value)
+      case "eyr":
+        passport.expirationYear = Int(value)
+      case "hgt":
+        passport.height = value
+      case "hcl":
+        passport.hairColor = value
+      case "ecl":
+        passport.eyeColor = value
+      case "pid":
+        passport.passportId = value
+      case "cid":
+        passport.countryId = value
+      default:
+        break
+      }
+    }
+  }
+
+  return passport
+}
+
+private func buildSearchCallback(_ characters: [Character]) -> (Int) -> Comparison {
+  var stack = Array(characters.reversed())
+
+  return { (x: Int) -> Comparison in
+    switch stack.popLast() {
+    case "F", "L":
+      return .lt
+    case "B", "R":
+      return .gt
+    default:
+      return .eq
+    }
+  }
+}
+
+private func getSeatIdBounds(_ reader: Reader) -> (low: Int, high: Int) {
+  var highest = Int.min
+  var lowest = Int.max
+
+  while let line = reader.next() {
+    let characters = Array(line)
+    let row = searchInPartition(num: 128, partitions: Array(characters[..<7]))
+    let col = searchInPartition(num: 8, partitions: Array(characters[7...]))
+    highest = max(highest, (row * 8 + col))
+    lowest = min(lowest, (row * 8 + col))
+  }
+
+  return (lowest, highest)
+}
+
+private func searchInPartition(num: Int, partitions: [Character]) -> Int {
+  let callback = buildSearchCallback(partitions)
+  let range = Array(0..<num)
+
+  return binarySearchClosure(coll: range, low: 0, high: num - 1, callback: callback)
+}
+
+private func buildBagMap(reader: Reader) -> [String: Set<Bag>] {
+  var map = [String: Set<Bag>]()
+
+  while let line = reader.next() {
+    let keyValue = line.components(separatedBy: "contain")
+    let keyParts = keyValue[0].components(separatedBy: " ")
+    let key = String(keyParts[0] + " " + keyParts[1])
+    let bags = keyValue[1].components(separatedBy: ",")
+
+    bags.forEach {
+      let bagParts = $0.components(separatedBy: " ")
+      let bagNum = Int(bagParts[1])
+      if bagNum == nil {
+        return
+      }
+
+      let bagColor = String(bagParts[2] + " " + bagParts[3])
+      map[key, default: Set<Bag>()].insert(Bag(count: bagNum!, color: bagColor))
+    }
+  }
+
+  return map
+}
+
+private func findHoldingBagsFor(color: String, map: [String: Set<Bag>], found: inout Set<String>) {
+  map.forEach {
+    if $0.value.contains(where: { $0.color == color }) {
+      found.insert($0.key)
+      findHoldingBagsFor(color: $0.key, map: map, found: &found)
+    }
+  }
+}
+
+private func countTotalContainingBags(color: String, map: [String: Set<Bag>]) -> Int {
+  if map[color] == nil {
+    return 0
+  }
+
+  return map[color]!.reduce(0) { carry, bag in
+    let numInnerBags = countTotalContainingBags(color: bag.color, map: map)
+    return carry + (bag.count + bag.count * numInnerBags)
+  }
 }

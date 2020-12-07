@@ -4,6 +4,7 @@ class RE: Error {}
 
 class Reader {
   private let decoder = JSONDecoder()
+  private var initialLines = [String]()
   private var lines: IndexingIterator<[String]> = [].makeIterator()
   private let root =
     FileManager.default.homeDirectoryForCurrentUser.path + "/Development/adventofcode/adventofcode"
@@ -17,22 +18,34 @@ class Reader {
       fatalError("Could not open file")
     }
 
-    lines = content.components(separatedBy: "\n").filter({ !$0.isEmpty }).makeIterator()
+    initialLines = content.components(separatedBy: "\n")
+    replay()
   }
 
-  func nextLine() -> String? {
-    return lines.next()
+  func replay() {
+    lines = initialLines.makeIterator()
   }
 
-  func next<T: Codable>() -> T? {
-    guard let line = lines.next() else {
-      return nil
+  func next(skipEmpty: Bool = true) -> String? {
+    let nextLine = lines.next()
+    if skipEmpty && nextLine == "" {
+      return next(skipEmpty: skipEmpty)
     }
 
-    do {
-      return try decoder.decode(T.self, from: line.data(using: .utf8)!)
-    } catch {
-      fatalError("Could not decode")
+    return nextLine
+  }
+
+  func nextBlock() -> [String]? {
+    var result = [String]()
+
+    while let line: String = reader.next(skipEmpty: false) {
+      if line == "" {
+        return result
+      }
+
+      result.append(line)
     }
+
+    return result.isEmpty ? nil : result
   }
 }

@@ -3,6 +3,12 @@ import XCTest
 @testable import adventofcode
 
 class Tests2020: XCTestCase {
+  func testDay8Part2() throws {
+    XCTAssertEqual(1303, _2020_day8_part2())
+  }
+  func testDay8Part1() throws {
+    XCTAssertEqual(1867, _2020_day8_part1())
+  }
   func testDay7Part2() throws {
     XCTAssertEqual(4165, _2020_day7_part2())
   }

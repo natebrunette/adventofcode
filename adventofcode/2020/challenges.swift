@@ -1,5 +1,42 @@
 let reader = Reader()
 
+func _2020_day8_part2() -> Int {
+  reader.readFile(year: 2020, day: 8)
+
+  let instructions = reader.nextBlock()!.map { Instruction.parse($0) }
+  var visited = Set<Int>()
+
+  return GameConsole(instructions: instructions).run(0, 0, &visited)!
+}
+
+func _2020_day8_part1() -> Int {
+  reader.readFile(year: 2020, day: 8)
+
+  var visited = Set<Int>()
+  var accumulated = 0
+  let instructions = reader.nextBlock()!.map { Instruction.parse($0) }
+  var i = 0
+  while i < instructions.count {
+    if visited.contains(i) {
+      break
+    }
+
+    let instruction = instructions[i]
+    switch instruction.type {
+    case .acc:
+      accumulated += instruction.amount
+      i++
+    case .jmp:
+      visited.insert(i)
+      i += instruction.amount
+    case .nop:
+      i++
+    }
+  }
+
+  return accumulated
+}
+
 func _2020_day7_part2() -> Int {
   reader.readFile(year: 2020, day: 7)
 

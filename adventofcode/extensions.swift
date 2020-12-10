@@ -35,3 +35,9 @@ extension Bool {
     return lhs != rhs
   }
 }
+
+extension Array where Element == String {
+  func asInt() -> [Int] {
+    return self.map { Int($0)! }
+  }
+}

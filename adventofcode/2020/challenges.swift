@@ -1,5 +1,74 @@
 let reader = Reader()
 
+func _2020_day10_part2() -> Int {
+  reader.readFile(year: 2020, day: 10)
+
+  let adapters = [0] + reader.nextBlock()!.asInt().sorted()
+  var map = [adapters[0]: 1]
+  let max = adapters.max()!
+  let valid = Set<Int>(adapters)
+
+  for i in adapters[1]...max {
+    guard valid.contains(i) else {
+      continue
+    }
+
+    map[i] = map[i - 1, default: 0] + map[i - 2, default: 0] + map[i - 3, default: 0]
+  }
+
+  return map[max]!
+}
+
+func _2020_day10_part1() -> Int {
+  reader.readFile(year: 2020, day: 10)
+
+  let adapters = [0] + reader.nextBlock()!.asInt().sorted()
+  var map = [0: 1, 3: 1]
+
+  for i in 1..<adapters.count {
+    map[adapters[i] - adapters[i - 1], default: 0] += 1
+  }
+
+  return map[1]! * map[3]!
+}
+
+func _2020_day9_part2() -> Int {
+  reader.readFile(year: 2020, day: 9)
+
+  let lines = reader.nextBlock()!.asInt()
+  let target = _2020_day9_part1()
+
+  var left = 0
+  var right = 1
+  var count = lines[left] + lines[right]
+
+  while count != target {
+    if count > target {
+      count -= lines[left++]
+    } else {
+      count += lines[++right]
+    }
+  }
+
+  let range = lines[left...right]
+
+  return range.min()! + range.max()!
+}
+
+func _2020_day9_part1() -> Int {
+  reader.readFile(year: 2020, day: 9)
+
+  let lines = reader.nextBlock()!.asInt()
+  let preamble = 25
+  for i in preamble..<lines.count {
+    if twoSum(nums: Array(lines[i - preamble..<i]), target: lines[i]) == [] {
+      return lines[i]
+    }
+  }
+
+  return 0
+}
+
 func _2020_day8_part2() -> Int {
   reader.readFile(year: 2020, day: 8)
 

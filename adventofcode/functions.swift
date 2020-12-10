@@ -10,7 +10,7 @@ func twoSum(nums: [Int], target: Int) -> [Int] {
     map[num] = i
   }
 
-  return [0]
+  return []
 }
 
 func threeSum(nums: [Int], target: Int) -> [Int] {

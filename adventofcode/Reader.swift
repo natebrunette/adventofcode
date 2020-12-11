@@ -1,7 +1,5 @@
 import Foundation
 
-class RE: Error {}
-
 class Reader {
   private let decoder = JSONDecoder()
   private var initialLines = [String]()

@@ -32,12 +32,12 @@ extension StringProtocol {
 
 extension Bool {
   static func ^ (lhs: Bool, rhs: Bool) -> Bool {
-    return lhs != rhs
+    lhs != rhs
   }
 }
 
 extension Array where Element == String {
   func asInt() -> [Int] {
-    return self.map { Int($0)! }
+    self.map { Int($0)! }
   }
 }

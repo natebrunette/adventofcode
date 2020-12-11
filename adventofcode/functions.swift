@@ -42,7 +42,7 @@ enum Comparison {
 }
 
 func binarySearch<T: Comparable>(coll: [T], low: Int, high: Int, target: T) -> Int {
-  return binarySearchClosure(coll: coll, low: low, high: high) { item in
+  binarySearchClosure(coll: coll, low: low, high: high) { item in
     if target < item {
       return .lt
     } else if target > item {

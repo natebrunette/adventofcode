@@ -2,7 +2,7 @@ import ValidatedPropertyKit
 
 extension Validation where Value == String {
   static var height: Validation {
-    return .init { value in
+    .init { value in
       guard let height = Int(value.prefix(value.count - 2)) else {
         return .failure("\(value) is not a valid height")
       }
@@ -50,7 +50,7 @@ struct Passport {
   var countryId: String?
 
   func isValid() -> Bool {
-    return _birthYear.isValid
+    _birthYear.isValid
       && _issueYear.isValid
       && _expirationYear.isValid
       && _height.isValid

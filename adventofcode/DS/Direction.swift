@@ -1,6 +1,8 @@
 enum Direction: RawRepresentable {
   case right, left, up, down
+  case east, west, north, south
   case upRight, upLeft, downRight, downLeft
+  case northEast, northWest, southEast, southWest
 
   var rawValue: RawValue {
     switch self {
@@ -8,10 +10,18 @@ enum Direction: RawRepresentable {
     case .left: return (0, -1)
     case .up: return (-1, 0)
     case .down: return (1, 0)
+    case .east: return (0, 1)
+    case .west: return (0, -1)
+    case .north: return (-1, 0)
+    case .south: return (1, 0)
     case .upRight: return (-1, 1)
     case .upLeft: return (-1, -1)
     case .downRight: return (1, 1)
     case .downLeft: return (1, -1)
+    case .northEast: return (-1, 1)
+    case .northWest: return (-1, -1)
+    case .southEast: return (1, 1)
+    case .southWest: return (1, -1)
     }
   }
 

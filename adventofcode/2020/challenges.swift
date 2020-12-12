@@ -1,5 +1,76 @@
 let reader = Reader()
 
+func _2020_day12_part2() -> Int {
+  reader.readFile(year: 2020, day: 12)
+
+  var location = Point(0, 0)
+  var waypoint = Point(10, -1)
+
+  while let line = reader.next() {
+    let dir = NavigationAction(rawValue: line[0])!
+    let amount = Int(line[1...])!
+    switch dir {
+    case .right:
+      waypoint.rotate90(around: location, degrees: amount)
+    case .left:
+      waypoint.rotate90(around: location, degrees: -amount)
+    case .north:
+      waypoint.move(.north, times: amount)
+    case .east:
+      waypoint.move(.east, times: amount)
+    case .south:
+      waypoint.move(.south, times: amount)
+    case .west:
+      waypoint.move(.west, times: amount)
+    case .forward:
+      let distance = location.relativeDistance(to: waypoint)
+      location.move(distance: distance, times: amount)
+      waypoint.move(distance: distance, times: amount)
+    }
+  }
+
+  return location.distance(from: Point(0, 0))
+}
+
+func _2020_day12_part1() -> Int {
+  reader.readFile(year: 2020, day: 12)
+
+  var location = Point(0, 0)
+  var facing = Facing.east
+
+  while let line = reader.next() {
+    let dir = NavigationAction(rawValue: line[0])!
+    let amount = Int(line[1...])!
+    switch dir {
+    case .right:
+      facing = facing.turn(.right, amount: amount)
+    case .left:
+      facing = facing.turn(.left, amount: amount)
+    case .north:
+      location.move(.north, times: amount)
+    case .east:
+      location.move(.east, times: amount)
+    case .south:
+      location.move(.south, times: amount)
+    case .west:
+      location.move(.west, times: amount)
+    case .forward:
+      switch facing {
+      case .north:
+        location.move(.north, times: amount)
+      case .east:
+        location.move(.east, times: amount)
+      case .south:
+        location.move(.south, times: amount)
+      case .west:
+        location.move(.west, times: amount)
+      }
+    }
+  }
+
+  return location.distance(from: Point(0, 0))
+}
+
 func _2020_day11_part2() -> Int {
   day11(seatLimit: 5, limit: nil, predicate: { $0 != PlaneSeat.none })
 }
@@ -294,8 +365,9 @@ func _2020_day1_part1() -> Int {
   return twoSum(nums: nums, target: 2020).reduce(1) { $0 * nums[$1] }
 }
 
-private func validPassword(min: Int, max: Int, character: Character, password: String) -> Bool {
-  let count = password.reduce(0) { $1 == character ? $0 + 1 : $0 }
+private func validPassword(min: Int, max: Int, character: String, password: String) -> Bool {
+  let char = Character(character)
+  let count = password.reduce(0) { $1 == char ? $0 + 1 : $0 }
 
   return count >= min && count <= max
 }
@@ -305,7 +377,7 @@ private func buildTobogganGrid(reader: Reader) -> [[String.Element]] {
   var x = 0
 
   while let line = reader.next() {
-    grid.append([Character](repeating: Character("."), count: line.count))
+    grid.append([Character](repeating: ".", count: line.count))
     line.enumerated().forEach { grid[x][$0] = $1 }
     x++
   }
@@ -497,4 +569,32 @@ private func buildNewSeatGrid(
   }
 
   return newGrid
+}
+
+private enum NavigationAction: String {
+  case right = "R"
+  case left = "L"
+  case north = "N"
+  case east = "E"
+  case south = "S"
+  case west = "W"
+  case forward = "F"
+}
+
+private enum Facing: Int {
+  enum Turn { case right, left }
+
+  case north = 0
+  case east = 90
+  case south = 180
+  case west = 270
+
+  func turn(_ direction: Turn, amount: Int) -> Facing {
+    switch direction {
+    case .right:
+      return Facing(rawValue: (self.rawValue + amount) % 360)!
+    case .left:
+      return Facing(rawValue: (self.rawValue + (360 - amount)) % 360)!
+    }
+  }
 }

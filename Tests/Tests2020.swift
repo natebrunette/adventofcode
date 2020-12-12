@@ -1,6 +1,12 @@
 import XCTest
 
 class Tests2020: XCTestCase {
+  func testDay12part2() throws {
+    XCTAssertEqual(63843, _2020_day12_part2())
+  }
+  func testDay12part1() throws {
+    XCTAssertEqual(1496, _2020_day12_part1())
+  }
   func testDay11part2() throws {
     XCTAssertEqual(2121, _2020_day11_part2())
   }

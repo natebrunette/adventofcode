@@ -28,6 +28,10 @@ extension StringProtocol {
   subscript(offset: Int) -> Character {
     self[index(startIndex, offsetBy: offset)]
   }
+
+  func toArray() -> [String] {
+    self.map { String($0) }
+  }
 }
 
 extension Bool {

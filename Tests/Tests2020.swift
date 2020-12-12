@@ -1,8 +1,12 @@
 import XCTest
 
-//@testable import adventofcode
-
 class Tests2020: XCTestCase {
+  func testDay11part2() throws {
+    XCTAssertEqual(2121, _2020_day11_part2())
+  }
+  func testDay11part1() throws {
+    XCTAssertEqual(2275, _2020_day11_part1())
+  }
   func testDay10part2() throws {
     XCTAssertEqual(1_322_306_994_176, _2020_day10_part2())
   }

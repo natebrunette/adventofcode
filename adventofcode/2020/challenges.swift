@@ -1,5 +1,27 @@
 let reader = Reader()
 
+func _2020_day11_part2() -> Int {
+  day11(seatLimit: 5, limit: nil, predicate: { $0 != PlaneSeat.none })
+}
+
+func _2020_day11_part1() -> Int {
+  day11(seatLimit: 4, limit: 1, predicate: { $0 == PlaneSeat.occupied })
+}
+
+private func day11(seatLimit: Int, limit: Int?, predicate: (PlaneSeat) -> Bool) -> Int {
+  reader.readFile(year: 2020, day: 11)
+
+  let lines = reader.nextBlock()!.map { $0.toArray().map { PlaneSeat(rawValue: $0)! } }
+  var grid = Grid(grid: lines, defaultValue: .none)
+  var newGrid = buildNewSeatGrid(grid, seatLimit: seatLimit, predicate: predicate, limit: limit)
+  while grid != newGrid {
+    grid = newGrid
+    newGrid = buildNewSeatGrid(grid, seatLimit: seatLimit, predicate: predicate, limit: limit)
+  }
+
+  return grid.filter { grid[$0] == PlaneSeat.occupied }.count
+}
+
 func _2020_day10_part2() -> Int {
   reader.readFile(year: 2020, day: 10)
 
@@ -425,4 +447,54 @@ private func countTotalContainingBags(color: String, map: [String: Set<Bag>]) ->
     let numInnerBags = countTotalContainingBags(color: bag.color, map: map)
     return carry + (bag.count + bag.count * numInnerBags)
   }
+}
+
+private enum PlaneSeat: String, CustomStringConvertible {
+
+  case empty = "L"
+  case occupied = "#"
+  case none = "."
+
+  var description: String { self.rawValue }
+}
+
+private func buildNewSeatGrid(
+  _ grid: Grid<PlaneSeat>,
+  seatLimit: Int,
+  predicate: (PlaneSeat) -> Bool,
+  limit: Int? = 1
+) -> Grid<PlaneSeat> {
+  var newGrid = Grid(rows: grid.rows, cols: grid.cols, defaultValue: grid.defaultValue)
+  for point in grid {
+    let seats = grid.directions(includeDiagonals: true).reduce(0) { carry, direction in
+      let newPoint = point + direction
+      if grid[newPoint] == nil {
+        return carry
+      }
+
+      let seat: Point? = grid.find(
+        start: point,
+        direction: direction,
+        limit: limit,
+        predicate: predicate
+      )
+
+      if seat != nil && grid[seat!]! == .occupied {
+        return carry + 1
+      }
+
+      return carry
+    }
+
+    switch grid[point] {
+    case .occupied:
+      newGrid[point] = seats >= seatLimit ? PlaneSeat.empty : PlaneSeat.occupied
+    case .empty:
+      newGrid[point] = seats == 0 ? PlaneSeat.occupied : PlaneSeat.empty
+    default:
+      break
+    }
+  }
+
+  return newGrid
 }

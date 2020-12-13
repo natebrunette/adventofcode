@@ -7,11 +7,14 @@ class Reader {
   private let root =
     FileManager.default.homeDirectoryForCurrentUser.path + "/Development/adventofcode/adventofcode"
 
-  func readFile(year: Int, day: Int) {
+  func readFile(year: Int, day: Int, sample: Bool = false) {
     let content: String
 
     do {
-      content = try String(contentsOfFile: "\(root)/\(year)/resources/day\(day)")
+      content =
+        sample
+        ? try String(contentsOfFile: "\(root)/\(year)/resources/samples/day\(day)")
+        : try String(contentsOfFile: "\(root)/\(year)/resources/day\(day)")
     } catch {
       fatalError("Could not open file")
     }

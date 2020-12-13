@@ -1,4 +1,4 @@
-struct Point {
+struct Point: Hashable {
   struct Distance {
     var x = 0, y = 0
   }
@@ -62,5 +62,14 @@ struct Point {
 
   static func += (point: inout Point, direction: Direction) {
     point = point + direction
+  }
+
+  static func == (lhs: Point, rhs: Point) -> Bool {
+    lhs.x == rhs.x && lhs.y == rhs.y
+  }
+
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(x)
+    hasher.combine(y)
   }
 }

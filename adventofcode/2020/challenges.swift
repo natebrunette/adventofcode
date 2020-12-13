@@ -72,25 +72,19 @@ func _2020_day12_part1() -> Int {
 }
 
 func _2020_day11_part2() -> Int {
-  day11(seatLimit: 5, limit: nil, predicate: { $0 != PlaneSeat.none })
+  reader.readFile(year: 2020, day: 11)
+
+  let graph = buildPlaneGraph(reader: reader)
+
+  return countOccupiedSeats(graph: graph, tolerance: 5)
 }
 
 func _2020_day11_part1() -> Int {
-  day11(seatLimit: 4, limit: 1, predicate: { $0 == PlaneSeat.occupied })
-}
-
-private func day11(seatLimit: Int, limit: Int?, predicate: (PlaneSeat) -> Bool) -> Int {
   reader.readFile(year: 2020, day: 11)
 
-  let lines = reader.nextBlock()!.map { $0.toArray().map { PlaneSeat(rawValue: $0)! } }
-  var grid = Grid(grid: lines, defaultValue: .none)
-  var newGrid = buildNewSeatGrid(grid, seatLimit: seatLimit, predicate: predicate, limit: limit)
-  while grid != newGrid {
-    grid = newGrid
-    newGrid = buildNewSeatGrid(grid, seatLimit: seatLimit, predicate: predicate, limit: limit)
-  }
+  let graph = buildPlaneGraph(reader: reader, limit: 1)
 
-  return grid.filter { grid[$0] == PlaneSeat.occupied }.count
+  return countOccupiedSeats(graph: graph, tolerance: 4)
 }
 
 func _2020_day10_part2() -> Int {
@@ -522,7 +516,6 @@ private func countTotalContainingBags(color: String, map: [String: Set<Bag>]) ->
 }
 
 private enum PlaneSeat: String, CustomStringConvertible {
-
   case empty = "L"
   case occupied = "#"
   case none = "."
@@ -530,45 +523,79 @@ private enum PlaneSeat: String, CustomStringConvertible {
   var description: String { self.rawValue }
 }
 
-private func buildNewSeatGrid(
-  _ grid: Grid<PlaneSeat>,
-  seatLimit: Int,
-  predicate: (PlaneSeat) -> Bool,
-  limit: Int? = 1
-) -> Grid<PlaneSeat> {
-  var newGrid = Grid(rows: grid.rows, cols: grid.cols, defaultValue: grid.defaultValue)
-  for point in grid {
-    let seats = grid.directions(includeDiagonals: true).reduce(0) { carry, direction in
-      let newPoint = point + direction
-      if grid[newPoint] == nil {
-        return carry
+private func buildPlaneGraph(reader: Reader, limit: Int? = nil) -> Graph<PlaneSeat> {
+  let lines = reader.nextBlock()!.map { $0.map { PlaneSeat(rawValue: String($0))! } }
+  var graph = Graph<PlaneSeat>()
+  let until = limit == nil ? Int.max : limit!
+  let numRows = lines.count
+  let numCols = lines[0].count
+  let directions = Direction.directions + Direction.diagonals
+
+  for row in 0..<numRows {
+    for col in 0..<numCols {
+      let value = lines[row][col]
+      if value == .none {
+        continue
       }
 
-      let seat: Point? = grid.find(
-        start: point,
-        direction: direction,
-        limit: limit,
-        predicate: predicate
-      )
+      let node = Graph.Node(row, col, value)
 
-      if seat != nil && grid[seat!]! == .occupied {
-        return carry + 1
+      for direction in directions {
+        var iteration = 0
+        var newRow = row
+        var newCol = col
+
+        while iteration++ < until {
+          newRow += direction.row
+          newCol += direction.col
+
+          if newRow < 0 || newCol < 0 || newRow >= numRows || newCol >= numCols {
+            break
+          }
+
+          if lines[newRow][newCol] != .none {
+            graph.add(Graph.Node(newRow, newCol, lines[newRow][newCol]), to: node)
+            break
+          }
+        }
       }
-
-      return carry
-    }
-
-    switch grid[point] {
-    case .occupied:
-      newGrid[point] = seats >= seatLimit ? PlaneSeat.empty : PlaneSeat.occupied
-    case .empty:
-      newGrid[point] = seats == 0 ? PlaneSeat.occupied : PlaneSeat.empty
-    default:
-      break
     }
   }
 
-  return newGrid
+  return graph
+}
+
+private func countOccupiedSeats(graph: Graph<PlaneSeat>, tolerance: Int) -> Int {
+  var occupied = graph.findNodes { $0.value == .occupied }
+  var changed = true
+  while changed {
+    changed = false
+    var visibleOccupiedSeats = [Graph<PlaneSeat>.Node: Int]()
+    occupied.forEach { node in
+      graph.get(node).forEach {
+        visibleOccupiedSeats[$0, default: 0]++
+      }
+    }
+
+    occupied = [Graph<PlaneSeat>.Node]()
+    graph.nodes().forEach { node in
+      if node.value == .occupied && visibleOccupiedSeats[node, default: 0] >= tolerance {
+        changed = true
+        node.value = .empty
+      }
+
+      if node.value == .empty && visibleOccupiedSeats[node, default: 0] == 0 {
+        changed = true
+        node.value = .occupied
+      }
+
+      if node.value == .occupied {
+        occupied.append(node)
+      }
+    }
+  }
+
+  return occupied.count
 }
 
 private enum NavigationAction: String {
